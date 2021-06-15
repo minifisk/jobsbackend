@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('postings/', views.posting_list),
@@ -11,3 +12,5 @@ urlpatterns = [
     path('applications/', views.application_list),
     path('applications/<int:pk>', views.application_detail)
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)
