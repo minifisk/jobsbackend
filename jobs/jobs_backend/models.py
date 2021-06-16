@@ -1,14 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class Applicant(models.Model):
-    email = models.EmailField(blank=False)
-    first_name = models.CharField(max_length=50, blank=False)
-    last_name = models.CharField(max_length=50, blank=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+class Applicant(AbstractUser):
+    is_active = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s %s' % (self.first_name, self.last_name)
+        return self.email
 
 class Employer(models.Model):
     email = models.EmailField(blank=False)
@@ -44,14 +42,15 @@ class Posting(models.Model):
         return '%s %s' % (self.title, self.city)
 
 class Application(models.Model):
-    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE, verbose_name="related applicant", blank=False)
+    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE, verbose_name="related applicant", blank=True, null=True)
     posting = models.ForeignKey(Posting, on_delete=models.CASCADE, verbose_name="related posting", blank=False)
+    email = models.EmailField(blank=False, unique=True)
     cover_letter = models.CharField(max_length=3000, blank=False)
     cv_link = models.URLField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s %s %s' % (self.applicant.first_name, self.applicant.last_name, self.posting.title)
+        return self.email
 
 
 
