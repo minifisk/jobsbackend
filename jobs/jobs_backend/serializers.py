@@ -1,15 +1,18 @@
 from rest_framework import serializers
-from .models import Applicant, Employer, Posting, Application
+from .models import User, Posting, Application
 
-class ApplicantSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Applicant
-        fields = '__all__'
+        model = User
+        fields = ['email', 'is_employer', 'is_active', 'company_name']
 
-class EmployerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Employer
-        fields = '__all__'
+    def validate(self, data):
+        """
+        Check that employers fill out company name
+        """
+        if data['is_employer'] == True and data['company_name'] == "":
+            raise serializers.ValidationError("Employers must fill out company name")
+        return data
 
 class PostingSerializer(serializers.ModelSerializer):
     class Meta:

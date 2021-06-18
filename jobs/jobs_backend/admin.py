@@ -1,17 +1,12 @@
 from django.contrib import admin
-from .models import Applicant, Employer, Posting, Application
+from .models import User, Posting, Application
 
 # Register your models here.
 
-class ApplicantAdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     fields = ['email', 'first_name', 'last_name']
 
-admin.site.register(Applicant, ApplicantAdmin)
-
-class EmployerAdmin(admin.ModelAdmin):
-    fields = ['email', 'company_name']
-
-admin.site.register(Employer, EmployerAdmin)
+admin.site.register(User, UserAdmin)
 
 class PostingAdmin(admin.ModelAdmin):
     fields = ['employer', 'title', 'work_title', 'description', 'work_type', 'weekly_hours', 'locally_bound', 'city']

@@ -2,19 +2,24 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class Applicant(AbstractUser):
+class User(AbstractUser):
+    
+    """ User model """
+    username = None
+    first_name = None
+    last_name = None
+
+    email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=False)
+    is_employer = models.BooleanField(default=False)
+    company_name = models.CharField(max_length=50, blank=True)
+
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
 
     def __str__(self):
-        return self.email
-
-class Employer(models.Model):
-    email = models.EmailField(blank=False)
-    company_name = models.CharField(max_length=50, blank=False)
-
-    def __str__(self):
-        return '%s %s' % (self.company_name, self.email)
-
+        return '%s %s' % (self.email, self.company_name)
 
 class Posting(models.Model):
     FULLTIME = "FT"
@@ -28,7 +33,7 @@ class Posting(models.Model):
         (CONSULTANT, "Consultant")
     ]
 
-    employer = models.ForeignKey(Employer, on_delete=models.CASCADE, verbose_name="related employer", blank=False)
+    employer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related employer", blank=False)
     title = models.CharField(max_length=150, blank=False)
     work_title = models.CharField(max_length=50, blank=False)
     description = models.CharField(max_length=500, blank=False)
@@ -42,7 +47,7 @@ class Posting(models.Model):
         return '%s %s' % (self.title, self.city)
 
 class Application(models.Model):
-    applicant = models.ForeignKey(Applicant, on_delete=models.CASCADE, verbose_name="related applicant", blank=True, null=True)
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related applicant", blank=True, null=True)
     posting = models.ForeignKey(Posting, on_delete=models.CASCADE, verbose_name="related posting", blank=False)
     email = models.EmailField(blank=False, unique=True)
     cover_letter = models.CharField(max_length=3000, blank=False)
