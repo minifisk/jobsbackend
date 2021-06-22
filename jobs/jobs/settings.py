@@ -42,8 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'jobs_backend',
     'rest_framework',
-    'django_extensions'
+    'django_extensions',
+    'django.contrib.sites',
+    'crispy_forms'
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -101,6 +105,7 @@ DATABASES = {
     }
 }
 
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.mailtrap.io'
 EMAIL_HOST_USER = '3c45f4d987a262'

@@ -19,6 +19,7 @@ class Command(BaseCommand):
             reset_url = f'{settings.BASE_URL}{reset_path}'
 
             print(user)
+            print(user.id)
             print(token)
             print(reset_url)
         except Exception as e:
