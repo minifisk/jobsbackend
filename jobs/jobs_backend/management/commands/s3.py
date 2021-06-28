@@ -1,26 +1,16 @@
 from django.core.management.base import BaseCommand, CommandError
-
-#Imports, etc.
-""" Imports """
-import boto3
-import logging
 from botocore.exceptions import ClientError
 import requests
+import logging
+import boto3
 
-""" Logging """
-logging.basicConfig(level=logging.INFO)
-
-""" Variables """
+""" VARIABLES """
 BUCKET_NAME = "jobsbucket"
 
-class Command(BaseCommand):
-    help = "Testing retrieving S3 URL"
+""" LOGGING SETTINGS """
+logging.basicConfig(level=logging.INFO)
 
-    def handle(self, *args, **options):
-        try:    
-
-
-
+""" HELPER FUNCTION """
 def create_presigned_post(bucket_name, object_name,
                           fields=None, conditions=None, expiration=3600):
     """Generate a presigned URL S3 POST request to upload a file
@@ -50,19 +40,15 @@ def create_presigned_post(bucket_name, object_name,
     # The response contains the presigned URL and required fields
     return response
 
+""" ADMIN FUNCTION """ 
+class Command(BaseCommand):
+    help = "Testing S3 Signed URL"
 
-""" TEST CODE UPLOADING AN IMAGE """
+    def handle(self, *args, **options):
+        try:
+            
 
-# Generate a presigned S3 POST URL
-object_name = 'heroes.jpg'
-response = create_presigned_post(BUCKET_NAME, object_name)
-if response is None:
-    exit(1)
-
-# Demonstrate how another Python program can use the presigned URL to upload a file
-with open(object_name, 'rb') as f:
-    files = {'file': (object_name, f)}
-    http_response = requests.post(response['url'], data=response['fields'], files=files)
-   
-    # If successful, returns HTTP status code 204
-    logging.info(f'File upload HTTP status code: {http_response.status_code}')    
+            
+        except Exception as e:
+            print(e)
+            raise CommandError("Something went wrong")

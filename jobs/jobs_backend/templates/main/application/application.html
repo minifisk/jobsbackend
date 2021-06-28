@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Submitting an application</h1>
+
+    <form method="POST" action="/applications/">
+        {% csrf_token%}
+        <br>
+        <label for="postings">Choose which posting to apply to:</label><br>
+        <select name="postings" id="postings">
+            {% for posting in postings %}
+            <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
+                {% endfor %}</option>
+        </select> <br>
+        <p id="status">Select your CV (PDF format)</p>
+        <input type="file" id="file-input"><br><br>
+        <label for="email">Input your email</label><br>
+        <input type="email" name="email" placeholder="Email"><br><br>
+        <label for="cover_letter">Write your cover letter for the posting</label><br>
+        <textarea rows="5" cols="60" name="cover_letter" placeholder="Cover Letter"></textarea><br><br>
+
+        <input type="hidden" id="cv-url" name="cv-url">
+
+        <hr>
+        <h2>Submit your application</h2>
+
+        <input type="submit" value="Submit your application">
+    </form>
+
+    <script type="text/javascript">
+
+        /* Function for generating random UUID v4 (https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid/2117523#2117523) */
+        function uuidv4() {
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+                (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+            );
+        }
+
+        /* Function for getting the file from the input field and starting the
+        process to get a signed URL for the file */
+
+        (function () {
+            document.getElementById("file-input").onchange = function () {
+                let files = document.getElementById("file-input").files;
+                let file = files[0];
+                Object.defineProperty(file, "name", {
+                    writeable: true,
+                    value: `${uuidv4()}.pdf`
+                })
+                if (!file) {
+                    return alert("No file selected");
+                }
+                getSignedRequest(file);
+            }
+        })();
+
+        /* Using an XML object to retrieve the signed URL from corresponding path
+        in back-end */
+        function getSignedRequest(file) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/sign_s3?file_name=" + file.name + "&file_type=" + file.type)
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = JSON.parse(xhr.responseText)
+                        uploadFile(file, response.data, response.url)
+                    }
+                    else {
+                        alert("Could not get signed URL")
+                    }
+                }
+            };
+            xhr.send()
+        }
+
+
+        function uploadFile(file, s3Data, url) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", s3Data.url)
+
+            let postData = new FormData()
+            for (key in s3Data.fields) {
+                postData.append(key, s3Data.fields[key])
+            }
+
+            postData.append("file", file)
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 || xhr.status === 204) {
+                        document.getElementById("cv-url").value = url
+                    }
+                    else {
+                        alert("Could not upload file")
+                    }
+                }
+            };
+            xhr.send(postData)
+        }
+
+
+    </script>
+
+</body>
+
+</html>

@@ -78,7 +78,7 @@ class Posting(models.Model):
     def __str__(self):
         return '%s %s' % (self.title, self.city)
 
-# APPLICATION MODEL
+# APPLICATION
 class Application(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related applicant", blank=True, null=True)
     posting = models.ForeignKey(Posting, on_delete=models.CASCADE, verbose_name="related posting", blank=False)
