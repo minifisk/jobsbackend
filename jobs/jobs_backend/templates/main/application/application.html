@@ -20,7 +20,8 @@
             <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
                 {% endfor %}</option>
         </select> <br>
-        <p id="status">Select your CV (PDF format)</p>
+        <p id="status">Select your CV (PDF format)</p><br>
+        <a id="cv-status" href=""></a><br><br>
         <input type="file" id="file-input"><br><br>
         <label for="email">Input your email</label><br>
         <input type="email" name="email" placeholder="Email"><br><br>
@@ -49,6 +50,7 @@
 
         (function () {
             document.getElementById("file-input").onchange = function () {
+                document.getElementById("cv-status").innerHTML = "File selected, uploading..."
                 let files = document.getElementById("file-input").files;
                 let file = files[0];
                 Object.defineProperty(file, "name", {
@@ -97,10 +99,16 @@
                 if (xhr.readyState === 4) {
                     if (xhr.status === 200 || xhr.status === 204) {
                         document.getElementById("cv-url").value = url
+                        document.getElementById("cv-status").innerHTML = "File uploaded!"
+                        document.getElementById("cv-status").href = url
+
                     }
                     else {
                         alert("Could not upload file")
                     }
+                }
+                else {
+                    document.getElementById("cv-status").innerHTML = "Loading..."
                 }
             };
             xhr.send(postData)

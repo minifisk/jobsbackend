@@ -93,9 +93,6 @@ def Sign_s3(request):
         ExpiresIn = 3600
     )
 
-    boto3.set_stream_logger('')
-
-
     return JsonResponse({
         "data": presigned_post,
         "url": "https://%s.s3.amazonaws.com/%s" % (S3_BUCKET, file_name)
