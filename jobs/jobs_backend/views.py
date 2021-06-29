@@ -22,6 +22,7 @@ import os
 import boto3
 import boto3.session
 import json
+import logging
 
 
 
@@ -100,36 +101,45 @@ def Sign_s3(request):
 
 
 class ApplicationList(generics.ListCreateAPIView):
+    
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
+    # Inspiration: https://devcenter.heroku.com/articles/s3-upload-python
     def post(self, request):
-        print("post request applicationlist")
 
-        # Inspiration: https://devcenter.heroku.com/articles/s3-upload-python
+        posting_id = request.data["postings"]
+        email = request.data["email"]
+        cover_letter = request.data["cover_letter"]
+        cv_link = request.data["cv-url"]
+        
 
-        # Get the uploaded CV from the request
+        context = {'posting': posting_id, 'email': email, 'cover_letter': cover_letter, 'cv_link': cv_link}
+    
+        serializer = ApplicationSerializer(data=context)
 
-        # Create a presigned post
+        serializer.is_valid()
+        print(serializer.errors)
 
-        # UPload the file
-
-        # Store the URL to the file in a variable
-
-
-        serializer = ApplicationSerializer(data=request.data)
+        # Check if data is valid, for example that no previous application exist
         if serializer.is_valid():
             request_email = serializer.data['email']
 
             # Check if user is in database
             try: 
                 applicant = User.objects.get(email=request_email)
-                print("applicant already exist")
+                logging.info("User already in database")
+                # Check if user already applied to this posting
+             
+                # Add a new application to the posting 
+                posting = Posting.objects.get(id=posting_id)
+                new_application = Application.objects.create(posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
+                logging.info("Created new application")
             # If user is not in database
             except:
                 # Create a new user and storet it in "user"
                 user = User.objects.create_user(email=request_email)
-                print("created new applicant")
+                logging.info("created new applicant")
 
                 subject = "Password Reset Requested"
                 plaintext = template.loader.get_template('main/password/password_reset_email.txt')
@@ -153,7 +163,10 @@ class ApplicationList(generics.ListCreateAPIView):
                 except BadHeaderError:
                     return HttpResponse('Invalid header found.')
 
-                
+        else:
+            postings = Posting.objects.all()
+            messages = serializer.errors
+            return render(request, 'main/application/application.html', {'postings':postings, 'messages': messages})       
         queryset = self.get_queryset()
         serializer = ApplicationSerializer(queryset, many=True)
         return Response(serializer.data)

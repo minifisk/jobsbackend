@@ -22,5 +22,5 @@ class PostingSerializer(serializers.ModelSerializer):
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
-        fields = '__all__'
+        fields = ['posting', 'email', 'cover_letter', 'cv_link']
 

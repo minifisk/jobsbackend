@@ -9,6 +9,11 @@
 </head>
 
 <body>
+    {% if messages %}
+    <p style="color:red">You have already applied to this posting!</p>
+    {% endif %}
+
+
     <h1>Submitting an application</h1>
 
     <form method="POST" action="/applications/">
@@ -20,13 +25,13 @@
             <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
                 {% endfor %}</option>
         </select> <br>
-        <p id="status">Select your CV (PDF format)</p><br>
+        <p>Select your CV (PDF format)</p><br>
         <a id="cv-status" href=""></a><br><br>
-        <input type="file" id="file-input"><br><br>
+        <input type="file" id="file-input" required><br><br>
         <label for="email">Input your email</label><br>
-        <input type="email" name="email" placeholder="Email"><br><br>
+        <input type="email" name="email" placeholder="Email" required><br><br>
         <label for="cover_letter">Write your cover letter for the posting</label><br>
-        <textarea rows="5" cols="60" name="cover_letter" placeholder="Cover Letter"></textarea><br><br>
+        <textarea rows="5" cols="60" name="cover_letter" placeholder="Cover Letter" required></textarea><br><br>
 
         <input type="hidden" id="cv-url" name="cv-url">
 

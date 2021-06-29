@@ -82,10 +82,13 @@ class Posting(models.Model):
 class Application(models.Model):
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related applicant", blank=True, null=True)
     posting = models.ForeignKey(Posting, on_delete=models.CASCADE, verbose_name="related posting", blank=False)
-    email = models.EmailField(blank=False, unique=True)
+    email = models.EmailField(blank=False)
     cover_letter = models.CharField(max_length=3000, blank=False)
     cv_link = models.URLField(max_length=500, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('posting', 'email')
 
     def __str__(self):
         return self.email
