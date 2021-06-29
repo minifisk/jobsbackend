@@ -13,6 +13,15 @@
     <p style="color:red">You have already applied to this posting!</p>
     {% endif %}
 
+    {% if requested_posting_id %}
+    Requested posting: {{ requested_posting_id }}
+    {% endif %}
+
+    <br>
+    {% for posting in postings %}
+    {{posting.id}}
+    {{requested_posting_id}}
+    {% endfor %}
 
     <h1>Submitting an application</h1>
 
@@ -22,7 +31,11 @@
         <label for="postings">Choose which posting to apply to:</label><br>
         <select name="postings" id="postings">
             {% for posting in postings %}
+            {% if requested_posting_id == posting.id %}
+            <option value={{posting.id}} selected>{{posting.employer.company_name}} || {{ posting.work_title}}
+                {% else %}
             <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
+                {% endif %}
                 {% endfor %}</option>
         </select> <br>
         <p>Select your CV (PDF format)</p><br>

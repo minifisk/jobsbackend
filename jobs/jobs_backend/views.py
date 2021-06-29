@@ -2,6 +2,7 @@
 
 # Fundamental imports
 from django.shortcuts import render, redirect
+
 from rest_framework import generics
 from rest_framework.response import Response
 from .models import User, Posting, Application
@@ -23,6 +24,11 @@ import boto3
 import boto3.session
 import json
 import logging
+from django.db.models import Q
+
+
+# Loggin level
+logging.basicConfig(level=logging.INFO)
 
 
 
@@ -69,9 +75,10 @@ class PostingDetail(generics.RetrieveUpdateDestroyAPIView):
 
 """ APPLICATIONS """
 
-def SubmitApplication(request):
+def SubmitApplication(request, requested_posting_id):
+    requested_posting_id = int(requested_posting_id)
     postings = Posting.objects.all()
-    return render(request, 'main/application/application.html', {'postings':postings})
+    return render(request, 'main/application/application.html', {'postings':postings, 'requested_posting_id': requested_posting_id })
 
 def Sign_s3(request):
 
@@ -117,9 +124,6 @@ class ApplicationList(generics.ListCreateAPIView):
         context = {'posting': posting_id, 'email': email, 'cover_letter': cover_letter, 'cv_link': cv_link}
     
         serializer = ApplicationSerializer(data=context)
-
-        serializer.is_valid()
-        print(serializer.errors)
 
         # Check if data is valid, for example that no previous application exist
         if serializer.is_valid():
@@ -167,10 +171,24 @@ class ApplicationList(generics.ListCreateAPIView):
             postings = Posting.objects.all()
             messages = serializer.errors
             return render(request, 'main/application/application.html', {'postings':postings, 'messages': messages})       
-        queryset = self.get_queryset()
-        serializer = ApplicationSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return redirect('/applications/')
 
 class ApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
+
+""" SEARCH """
+def SearchView(request):
+    return render(request, 'main/search/search.html')
+
+def SearchQuery(request):
+
+    search = request.GET.get("search")
+    queryset = Posting.objects.all()
+    payload = []
+    if search:
+        queryset = queryset.filter(Q(title__icontains=search) | Q(work_title__icontains=search))
+        for result in queryset:
+            payload.append(result.title + " || " + result.work_title + " || " + "id: " + str(result.id))
+    
+    return JsonResponse({'status': 200, 'data': payload})

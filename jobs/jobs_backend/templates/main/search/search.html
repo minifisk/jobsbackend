@@ -1,0 +1,51 @@
+<!-- Source: https://autocomplete.trevoreyre.com/ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <link rel="stylesheet" href="https://unpkg.com/@trevoreyre/autocomplete-js/dist/style.css" />
+
+</head>
+
+<body>
+    <div class="container mt-5 pt-5 col-md-5">
+
+        <div id="autocomplete" class="autocomplete">
+            <input class="autocomplete-input" />
+            <ul class="autocomplete-result-list"></ul>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>
+
+    <script>
+        new Autocomplete("#autocomplete", {
+
+            search: input => {
+                const url = `/search/?search=${input}`
+                return new Promise(resolve => {
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            resolve(data.data)
+                        })
+                })
+            },
+            onSubmit: result => {
+                let length = result.length
+                let breakpoint = result.lastIndexOf(":") + 2
+                const posting_id = result.slice(breakpoint, length)
+                window.open(`/submitapplication/${posting_id}`)
+            }
+        })
+    </script>
+
+
+</body>
+
+</html>

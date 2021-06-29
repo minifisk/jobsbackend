@@ -18,8 +18,11 @@ urlpatterns = [
     path('employers/<int:pk>', views.EmployerDetail.as_view()),
     path('applications/', views.ApplicationList.as_view()),
     path('applications/<int:pk>', views.ApplicationDetail.as_view()),
-    path('submitapplication/', views.SubmitApplication, name="submit_application"),
-    path('sign_s3/', views.Sign_s3, name="sign_s3")
+    path('submitapplication/<requested_posting_id>', views.SubmitApplication, name="submit_application"),
+    path('sign_s3/', views.Sign_s3, name="sign_s3"),
+    path('searchview/', views.SearchView, name="search_view"),
+    path('search/', views.SearchQuery, name="search_query")
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

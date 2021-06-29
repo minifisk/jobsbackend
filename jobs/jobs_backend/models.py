@@ -66,8 +66,8 @@ class Posting(models.Model):
     ]
 
     employer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related employer", blank=False)
-    title = models.CharField(max_length=150, blank=False)
-    work_title = models.CharField(max_length=50, blank=False)
+    title = models.CharField(max_length=150, blank=False, db_index=True)
+    work_title = models.CharField(max_length=50, blank=False, db_index=True)
     description = models.CharField(max_length=500, blank=False)
     work_type = models.CharField(max_length=2, choices=WORK_TYPE_CHOICES, default=FULLTIME)
     weekly_hours = models.IntegerField(blank=False)
@@ -76,7 +76,7 @@ class Posting(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '%s %s' % (self.title, self.city)
+        return '%s || %s || %s' % (self.title, self.work_title, self.city)
 
 # APPLICATION
 class Application(models.Model):
