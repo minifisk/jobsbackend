@@ -3,10 +3,11 @@ from .models import User, Posting, Application
 
 # Register your models here.
 
-class UserAdmin(admin.ModelAdmin):
-    fields = ['email', 'first_name', 'last_name']
+class CustomUserAdmin(admin.ModelAdmin):
+    model = User
+    fields = ['email']
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User, CustomUserAdmin)
 
 class PostingAdmin(admin.ModelAdmin):
     fields = ['employer', 'title', 'work_title', 'description', 'work_type', 'weekly_hours', 'locally_bound', 'city']

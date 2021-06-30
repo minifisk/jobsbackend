@@ -13,12 +13,29 @@
 </head>
 
 <body>
-    <div class="container mt-5 pt-5 col-md-5">
 
+    {% if user.is_authenticated %}
+    <p>Welcome {{ user.email }}!</p>
+    <a href="/accounts/logout">Log out</a>
+    {% endif %}
+
+    <div class="container mt-5 pt-5 col-md-5">
+        <h1>Job postings</h1>
+
+        <h2>Search for a job posting</h2>
         <div id="autocomplete" class="autocomplete">
             <input class="autocomplete-input" />
             <ul class="autocomplete-result-list"></ul>
         </div>
+        <h2>Already have an account (Job-seeker/Employer)? Log in here! </h2>
+        <a href="/login">Log in</a>
+        <h2>Job-seekers - create an account to keep track of your applications!</h2>
+        <i>Lazy? No problem - an account will be created for you automatically if you apply to a job posting</i><br><br>
+        <a href="/register">Register as job-seeker</a>
+        <h2>Employer? Create account here to create job postings!</h2>
+        <a href="/register">Register as employer</a>
+
+
     </div>
 
     <script src="https://unpkg.com/@trevoreyre/autocomplete-js"></script>

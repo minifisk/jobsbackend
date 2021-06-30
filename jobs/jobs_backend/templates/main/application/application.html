@@ -9,19 +9,19 @@
 </head>
 
 <body>
-    {% if messages %}
+
+    {% if was_submitted == True %}
+    <p style="color:green">You application was submitted successfully!x</p>
+
+
+    {% else %}
+    {% if was_already_submitted == True %}
     <p style="color:red">You have already applied to this posting!</p>
+    {% else %}
+    Other reason: {{ error_message }}
+    {% endif %}
     {% endif %}
 
-    {% if requested_posting_id %}
-    Requested posting: {{ requested_posting_id }}
-    {% endif %}
-
-    <br>
-    {% for posting in postings %}
-    {{posting.id}}
-    {{requested_posting_id}}
-    {% endfor %}
 
     <h1>Submitting an application</h1>
 

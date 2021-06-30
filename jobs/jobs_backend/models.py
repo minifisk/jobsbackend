@@ -65,7 +65,7 @@ class Posting(models.Model):
         (CONSULTANT, "Consultant")
     ]
 
-    employer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related employer", blank=False)
+    employer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="related employer", blank=False, limit_choices_to={"is_employer":True})
     title = models.CharField(max_length=150, blank=False, db_index=True)
     work_title = models.CharField(max_length=50, blank=False, db_index=True)
     description = models.CharField(max_length=500, blank=False)

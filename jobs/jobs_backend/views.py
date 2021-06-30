@@ -37,7 +37,6 @@ logging.basicConfig(level=logging.INFO)
 """ LOGIN VIEW """
 class LoginUser(auth_views.LoginView):
     def get(self, request, *args, **kwargs):
-        print("Logging in")  
         return super(LoginUser, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
@@ -145,6 +144,12 @@ class ApplicationList(generics.ListCreateAPIView):
                 user = User.objects.create_user(email=request_email)
                 logging.info("created new applicant")
 
+                # Add a new application to the posting with the new user
+                posting = Posting.objects.get(id=posting_id)
+                new_application = Application.objects.create(posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
+                logging.info("Created new application")
+
+                # Preparing for sending link for password reset for new user
                 subject = "Password Reset Requested"
                 plaintext = template.loader.get_template('main/password/password_reset_email.txt')
                 htmltemp = template.loader.get_template('main/password/password_reset_email.html')
@@ -160,18 +165,41 @@ class ApplicationList(generics.ListCreateAPIView):
                 text_content = plaintext.render(c)
                 html_content = htmltemp.render(c)
                 try:
-                    print("sending email")
+                    logging.info("Sending sign-up email with password reset")
                     msg = EmailMultiAlternatives(subject, text_content, 'Website <admin@example.com>', [user.email], headers = {'Reply-To': 'admin@example.com'})
                     msg.attach_alternative(html_content, "text/html")
                     msg.send()
                 except BadHeaderError:
                     return HttpResponse('Invalid header found.')
 
+        # If added application is not valid
         else:
             postings = Posting.objects.all()
             messages = serializer.errors
-            return render(request, 'main/application/application.html', {'postings':postings, 'messages': messages})       
-        return redirect('/applications/')
+            was_submitted = False
+            # If applicant already applied to the posting
+            if "unique" in messages['non_field_errors'][0]:
+                was_already_submitted = True
+                error_message = messages['non_field_errors'][0]
+            # Other error mesages
+            else:
+                was_already_submitted = False
+                error_message = messages['non_field_errors'][0]
+            # Return template with embedded error messages
+            return render(request, 'main/application/application.html', 
+            {'postings':postings, 'was_submitted': was_submitted, 
+            'was_already_submitted': was_already_submitted, 
+            'error_message':error_message})       
+        
+        # If application was created successfully
+        postings = Posting.objects.all()
+        was_submitted = True
+        was_already_submitted = False
+        error_message = ""
+        return render(request, 'main/application/application.html', 
+        {'postings':postings, 'was_submitted': was_submitted, 
+        'was_already_submitted': was_already_submitted, 
+        'error_message': error_message}) 
 
 class ApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Application.objects.all()
