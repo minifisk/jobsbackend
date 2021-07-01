@@ -1,3 +1,7 @@
+{% extends "main/header.html" %}
+
+{% block content %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,50 +13,61 @@
 </head>
 
 <body>
+    <div class="container p-4">
+        {% if user.is_authenticated %}
+        You are submitting an application for the logged in user: {{ user.email }}<br>
+        <a href="/">Home</a><br>
+        <a href="/profile/{{user.id}}">See all your applications</a><br>
+        {% else %}
+        <a href="/">Home</a><br>
+        {% endif %}
 
-    {% if was_submitted == True %}
-    <p style="color:green">You application was submitted successfully!x</p>
+        {% if was_submitted == True %}
+        <p style="color:green">You application was submitted successfully!</p>
 
 
-    {% else %}
-    {% if was_already_submitted == True %}
-    <p style="color:red">You have already applied to this posting!</p>
-    {% else %}
-    Other reason: {{ error_message }}
-    {% endif %}
-    {% endif %}
+        {% else %}
+        {% if was_already_submitted == True %}
+        <p style="color:red">You have already applied to this posting!</p>
+        {% else %}
+        {{ error_message }}
+        {% endif %}
+        {% endif %}
 
+        <hr />
+        <h1>Submitting an application</h1>
 
-    <h1>Submitting an application</h1>
+        <form method="POST" action="/applications/">
+            {% csrf_token%}
+            <br>
+            <label for="postings">Choose which posting to apply to:</label><br>
+            <select name="postings" id="postings">
+                {% for posting in postings %}
+                {% if requested_posting_id == posting.id %}
+                <option value={{posting.id}} selected>{{posting.employer.company_name}} || {{ posting.work_title}}
+                    {% else %}
+                <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
+                    {% endif %}
+                    {% endfor %}</option>
+            </select> <br>
+            <label class="mt-4" for="file">Select your CV (PDF format)</label><br>
+            <input type="file" name="file" id="file-input" required><br>
+            <a id="cv-status" href=""></a><br>
+            <label class="mt-2" for="email">Input your email</label><br>
+            {% if user.is_authenticated %}
+            <input type="email" name="email" value="{{user.email}}" required><br>
+            {% else %}
+            <input type="email" name="email" placeholder="Email" required><br>
+            {% endif %}
+            <label class="mt-4" for="cover_letter">Write your cover letter for the posting</label><br>
+            <textarea rows="5" cols="60" name="cover_letter" placeholder="Cover Letter" required></textarea><br>
 
-    <form method="POST" action="/applications/">
-        {% csrf_token%}
-        <br>
-        <label for="postings">Choose which posting to apply to:</label><br>
-        <select name="postings" id="postings">
-            {% for posting in postings %}
-            {% if requested_posting_id == posting.id %}
-            <option value={{posting.id}} selected>{{posting.employer.company_name}} || {{ posting.work_title}}
-                {% else %}
-            <option value={{posting.id}}>{{posting.employer.company_name}} || {{ posting.work_title}}
-                {% endif %}
-                {% endfor %}</option>
-        </select> <br>
-        <p>Select your CV (PDF format)</p><br>
-        <a id="cv-status" href=""></a><br><br>
-        <input type="file" id="file-input" required><br><br>
-        <label for="email">Input your email</label><br>
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <label for="cover_letter">Write your cover letter for the posting</label><br>
-        <textarea rows="5" cols="60" name="cover_letter" placeholder="Cover Letter" required></textarea><br><br>
+            <input type="hidden" id="cv-url" name="cv-url">
 
-        <input type="hidden" id="cv-url" name="cv-url">
+            <input class="mt-3" type="submit" value="Submit your application">
+        </form>
 
-        <hr>
-        <h2>Submit your application</h2>
-
-        <input type="submit" value="Submit your application">
-    </form>
+    </div>
 
     <script type="text/javascript">
 
@@ -136,5 +151,7 @@
     </script>
 
 </body>
+
+{% endblock %}
 
 </html>

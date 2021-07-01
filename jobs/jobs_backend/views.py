@@ -25,6 +25,11 @@ import boto3.session
 import json
 import logging
 from django.db.models import Q
+from django.contrib.auth.forms import SetPasswordForm
+from rest_framework import serializers
+
+
+
 
 
 # Loggin level
@@ -52,6 +57,60 @@ class ApplicantDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.filter(is_employer=False)
     serializer_class = UserSerializer
 
+def Register(request, type):
+
+    if request.method == 'GET':
+        if type == "employer":
+            return render(request, 'registration/register_employer.html')
+        if type == "applicant":
+            return render(request, 'registration/register_applicant.html')
+    if request.method == 'POST':
+        if type == "employer":
+            email = request.POST.get('email')
+            company_name = request.POST.get('company_name')
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if password != confirm_password:
+                raise serializers.ValidationError("Passwords don't match!")
+
+            context = {'email': email, 'company_name': company_name, 'is_employer': True, 'is_active': True}
+    
+            serializer = UserSerializer(data=context)
+
+            if serializer.is_valid():
+                user = User.objects.create_user(email=email, password=password, is_employer=True, is_active=True)
+                logging.info("Created new Employer")
+
+            else:
+                logging.info(serializer.errors)
+                raise serializers.ValidationError(serializer.errors)
+
+            return render(request, 'registration/register_success.html')
+
+        if type == "applicant":
+            email = request.POST.get('email')
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+
+            if password != confirm_password:
+                raise serializers.ValidationError("Passwords don't match!")
+
+            context = {'email': email, 'is_employer': False, 'is_active': True, 'company_name': ""}
+    
+            serializer = UserSerializer(data=context)
+
+            if serializer.is_valid():
+                user = User.objects.create_user(email=email, password=password, is_employer=False, is_active=True)
+                logging.info("Created new Applicant")
+
+            else:
+                logging.info(serializer.errors)
+                raise serializers.ValidationError(serializer.errors)
+
+            return render(request, 'registration/register_success.html')
+
+
 """ EMPLOYERS """
 class EmployerList(generics.ListCreateAPIView):
     queryset = User.objects.filter(is_employer=True)
@@ -60,7 +119,6 @@ class EmployerList(generics.ListCreateAPIView):
 class EmployerDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.filter(is_employer=True)
     serializer_class = UserSerializer
-
 
 """ POSTINGS """
 class PostingList(generics.ListCreateAPIView):
@@ -114,11 +172,10 @@ class ApplicationList(generics.ListCreateAPIView):
     # Inspiration: https://devcenter.heroku.com/articles/s3-upload-python
     def post(self, request):
 
-        posting_id = request.data["postings"]
-        email = request.data["email"]
-        cover_letter = request.data["cover_letter"]
-        cv_link = request.data["cv-url"]
-        
+        posting_id = request.POST.get("postings")
+        email = request.POST.get("email")
+        cover_letter = request.POST.get("cover_letter")
+        cv_link = request.POST.get("cv-url")
 
         context = {'posting': posting_id, 'email': email, 'cover_letter': cover_letter, 'cv_link': cv_link}
     
@@ -136,37 +193,39 @@ class ApplicationList(generics.ListCreateAPIView):
              
                 # Add a new application to the posting 
                 posting = Posting.objects.get(id=posting_id)
-                new_application = Application.objects.create(posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
+                new_application = Application.objects.create(applicant=applicant, posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
                 logging.info("Created new application")
             # If user is not in database
             except:
                 # Create a new user and storet it in "user"
-                user = User.objects.create_user(email=request_email)
+                applicant = User.objects.create_user(email=request_email)
                 logging.info("created new applicant")
 
                 # Add a new application to the posting with the new user
                 posting = Posting.objects.get(id=posting_id)
-                new_application = Application.objects.create(posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
+                new_application = Application.objects.create(applicant=applicant, posting=posting, email=email, cover_letter=cover_letter,cv_link=cv_link)
                 logging.info("Created new application")
 
                 # Preparing for sending link for password reset for new user
+                # Inspiration: https://www.ordinarycoders.com/blog/article/html-password-reset-email-template
+                # Inspiration: https://learndjango.com/tutorials/django-password-reset-tutorial
                 subject = "Password Reset Requested"
                 plaintext = template.loader.get_template('main/password/password_reset_email.txt')
                 htmltemp = template.loader.get_template('main/password/password_reset_email.html')
                 c = {
-                "email":user.email,
+                "email":applicant.email,
                 'domain':'127.0.0.1:8000',
                 'site_name': 'Jobs',
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "user": user,
-                'token': PasswordResetTokenGenerator().make_token(user),
+                "uid": urlsafe_base64_encode(force_bytes(applicant.pk)),
+                "user": applicant,
+                'token': PasswordResetTokenGenerator().make_token(applicant),
                 'protocol': 'http',
                 }
                 text_content = plaintext.render(c)
                 html_content = htmltemp.render(c)
                 try:
                     logging.info("Sending sign-up email with password reset")
-                    msg = EmailMultiAlternatives(subject, text_content, 'Website <admin@example.com>', [user.email], headers = {'Reply-To': 'admin@example.com'})
+                    msg = EmailMultiAlternatives(subject, text_content, 'Website <admin@example.com>', [applicant.email], headers = {'Reply-To': 'admin@example.com'})
                     msg.attach_alternative(html_content, "text/html")
                     msg.send()
                 except BadHeaderError:
@@ -177,14 +236,16 @@ class ApplicationList(generics.ListCreateAPIView):
             postings = Posting.objects.all()
             messages = serializer.errors
             was_submitted = False
+            was_already_submitted = False
+            error_message = ""
+            print(messages)
             # If applicant already applied to the posting
-            if "unique" in messages['non_field_errors'][0]:
-                was_already_submitted = True
-                error_message = messages['non_field_errors'][0]
-            # Other error mesages
+            if "non_field_errors" in messages:
+                if "unique" in messages['non_field_errors'][0]:
+                    was_already_submitted = True
+                    error_message = messages['non_field_errors'][0]
             else:
-                was_already_submitted = False
-                error_message = messages['non_field_errors'][0]
+                error_message = messages
             # Return template with embedded error messages
             return render(request, 'main/application/application.html', 
             {'postings':postings, 'was_submitted': was_submitted, 
@@ -220,3 +281,30 @@ def SearchQuery(request):
             payload.append(result.title + " || " + result.work_title + " || " + "id: " + str(result.id))
     
     return JsonResponse({'status': 200, 'data': payload})
+
+""" PASSWORD RESET """
+class MySetPasswordForm(SetPasswordForm):
+    
+    def save(self, *args, commit=True, **kwargs):
+        user = super().save(*args, commit=False, **kwargs)
+        user.is_active = True
+        if commit:
+            user.save()
+        return user
+
+""" PROFILE """
+def ProfileView(request, pk):
+
+    user_pk = request.user.pk
+    browser_pk = pk
+    user = User.objects.get(pk=user_pk)
+
+    
+    if request.user.is_authenticated == False:
+        return redirect('/login')
+    else:
+        if user_pk != browser_pk:
+            return redirect('/profile/' + str(user_pk))
+        else:
+            applications = Application.objects.filter(applicant=user)
+            return render(request, 'main/profile/profile.html', {'applications': applications})

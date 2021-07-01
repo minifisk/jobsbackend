@@ -10,9 +10,9 @@ class UserSerializer(serializers.ModelSerializer):
         """
         Check that employers fill out company name
         """
-        if data['is_employer'] == True and data['company_name'] == "":
+        if data.get('is_employer') == True and data.get('company_name') == "":
             raise serializers.ValidationError("Employers must fill out company name")
-        if data['is_employer'] == False and data['company_name'] != "":
+        if data.get('is_employer') == False and data.get('company_name') != "":
             raise serializers.ValidationError("Only Employers can have a company name!")
         return data
 
@@ -24,5 +24,5 @@ class PostingSerializer(serializers.ModelSerializer):
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
-        fields = ['posting', 'email', 'cover_letter', 'cv_link']
+        fields = ['applicant', 'posting', 'email', 'cover_letter', 'cv_link']
 

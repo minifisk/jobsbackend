@@ -1,0 +1,85 @@
+[
+  {
+    "model": "jobs_backend.User",
+    "pk": 1,
+    "fields": {
+      "email": "alexlindgren08@gmail.com",
+      "is_employer": "True",
+      "company_name": "Guttae AB"
+    }
+  },
+  {
+    "model": "jobs_backend.User",
+    "pk": 2,
+    "fields": {
+      "email": "alexander.f.lindgren@gmail.com",
+      "is_employer": "True",
+      "company_name": "Studiehjälpen AB"
+    }
+  },
+  {
+    "model": "jobs_backend.Posting",
+    "pk": 1,
+    "fields": {
+      "employer": 1,
+      "title": "Django Web developer",
+      "work_title": "Web developer",
+      "description": "We are looking for a junior web developer with Django experience",
+      "weekly_hours": 40,
+      "city": "Stockholm",
+      "created_at": "2021-03-18T13:19:37+00:00"
+    }
+  },
+  {
+    "model": "jobs_backend.Posting",
+    "pk": 2,
+    "fields": {
+      "employer": 1,
+      "title": "Python Web developer",
+      "work_title": "Web developer",
+      "description": "We are looking for a sernior web developer with Python experience",
+      "weekly_hours": 40,
+      "city": "Stockholm",
+      "created_at": "2021-03-18T13:19:37+00:00"
+    }
+  },
+  {
+    "model": "jobs_backend.Posting",
+    "pk": 3,
+    "fields": {
+      "employer": 1,
+      "title": "C Web developer",
+      "work_title": "Web developer",
+      "description": "We are looking for a sernior developer with C experience",
+      "weekly_hours": 40,
+      "city": "Stockholm",
+      "created_at": "2021-03-18T13:19:37+00:00"
+    }
+  },
+  {
+    "model": "jobs_backend.Posting",
+    "pk": 4,
+    "fields": {
+      "employer": 2,
+      "title": "English tutor",
+      "work_title": "Tutor",
+      "description": "We are looking for a tutor to teach beginner english",
+      "weekly_hours": 40,
+      "city": "Göteborg",
+      "created_at": "2021-03-18T13:19:37+00:00"
+    }
+  },
+  {
+    "model": "jobs_backend.Posting",
+    "pk": 5,
+    "fields": {
+      "employer": 2,
+      "title": "Polish tutor",
+      "work_title": "Tutor",
+      "description": "We are looking for a tutor to teach advanced polish",
+      "weekly_hours": 40,
+      "city": "Göteborg",
+      "created_at": "2021-03-18T13:19:37+00:00"
+    }
+  }
+]

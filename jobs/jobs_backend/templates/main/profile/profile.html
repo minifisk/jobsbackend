@@ -1,0 +1,42 @@
+{% extends "main/header.html" %}
+
+{% block content %}
+
+<!--Password Reset Complete-->
+
+
+<div class="container p-4">
+    <p>Logged in as user: <b>{{ user.email }}</b></p>
+    <a class="mt-2" href="/">Home</a>
+
+
+
+    <h1 class="font-weight-bold mt-3 mb-5">Profile page</h1>
+
+    <h2 class="font-weight-bold mt-1 ">Your applications</h2>
+
+    {% if applications %}
+    {% for application in applications %}
+
+    <div class="card mb-5">
+        <div class="card-header">
+            {{ application.posting.employer.company_name }}
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{application.posting.title}}</h5>
+            <div class="card-text">{{application.posting.description}}</div>
+            <hr />
+            <h5 class="card-title">Your cover letter</h5>
+            <div class="card-text">{{application.cover_letter}}</div>
+            <a href="{{application.cv_link">CV used in application</a>
+            <div class="card-text">Application sent {{application.created_at}}</div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    You don't have any applications yet, <a href="/">Click here to search for jobs</a>
+    {% endif %}
+    <hr>
+</div>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register new account - Applicant</title>
+</head>
+
+<body>
+    <h1>Create a new applicant account</h1>
+
+    <a href="/register/">Want to register as an employer instead?</a>
+
+    <form method="POST" action="/register/applicant">
+        {% csrf_token%}
+        <br>
+        <label for="email">Input your email</label><br>
+        <input type="email" name="email" placeholder="Email" required><br><br>
+        <label for="email">Input your password</label><br>
+        <input type="password" minlength="8" id="password" name="password" placeholder="Password" onkeyup='check();'
+            required><br><br>
+        <label for="email">Confirm your password</label><br>
+        <input type="password" minlength="8" id="confirm_password" name="confirm_password"
+            placeholder="Password confirmatino" onkeyup='check();' required><br><br>
+        <span id="equality_message"></span><br>
+        <span id="length_message"></span>
+        <input type="hidden" name="is_employer" value="False">
+
+        <hr>
+        <h2>Register your account</h2>
+
+        <input type="submit" value="Register">
+    </form>
+
+    <script>
+        let check = function () {
+            if (document.getElementById('password').value.length < 8) {
+                document.getElementById('length_message').style.color = 'red';
+                document.getElementById('length_message').innerHTML = 'Passwords need to be 8 characters minimum';
+            } else {
+                document.getElementById('length_message').style.color = 'green';
+                document.getElementById('length_message').innerHTML = 'Passwords length satisfied! '
+            }
+
+            if (document.getElementById('password').value ==
+                document.getElementById('confirm_password').value) {
+                document.getElementById('equality_message').style.color = 'green';
+                document.getElementById('equality_message').innerHTML = 'Passwords matching!';
+            } else {
+                document.getElementById('equality_message').style.color = 'red';
+                document.getElementById('equality_message').innerHTML = 'Passwords not matching';
+            }
+        }
+    </script>
+</body>
+
+</html>

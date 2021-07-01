@@ -9,9 +9,11 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.SearchView, name="home"),
     path('accounts/',include('django.contrib.auth.urls')),
+    path('register/<str:type>', views.Register, name="register"),
     path('login/', auth_views.LoginView.as_view(), name='login'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="main/password/password_reset_confirm.html"), name='password_reset_confirm'),
+    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name="main/password/password_reset_confirm.html", form_class=views.MySetPasswordForm), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='main/password/password_reset_complete.html'), name='password_reset_complete'),
+    path('profile/<int:pk>', views.ProfileView, name="profile_view"),
     path('postings/', views.PostingList.as_view()),
     path('postings/<int:pk>/', views.PostingDetail.as_view()),
     path('applicants/', views.ApplicantList.as_view()),
