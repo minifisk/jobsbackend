@@ -77,5 +77,24 @@ S3-permissions:
 * ListAllMyBuckets (optional if you want to test the IAM users access)
 * PutObjectAcl
 
-Take note of the Access Key and Security Key for the user, you will have to provide them when setting up the application.
+Take note of the Access Key and Security Key for the user (you will only see them once), you will have to provide them when setting up the application.
+
+### Setting up the .env file
+In the repo is included an ".env.example" file, this contain the needed lines for setting up your own .env file. Remove the ".example" ending so it's just named ".env" and start filling out the credentials for your project.
+
+#### Secret Key
+This is a secret key that Django use for internal operations, you can generate yourself a secure key here: https://djecrety.ir/
+
+#### Database engine
+You need to set up a postgres database, which is the database of choice for this application. When you have set this up, fill in the credentials.
+
+#### Bucket name and region
+Here you fill out the name of your bucket and the region
+
+#### Email backend
+This project use a "dummy" email backend - meaning that all mails that go out are stored in a "fake inbox" and don't go out to the actual recipient, which is good for testing an application out. You can create a dummy email-backend over here for free https://mailtrap.io/ - check out their tutorials on how to get your credentials and then fill these out in your .env file.
+
+
+
+
 
