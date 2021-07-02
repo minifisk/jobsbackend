@@ -50,23 +50,23 @@ Block public and cross-account access to buckets and objects through any public 
  
  ##### Cross-origin resource sharing (CORS)
  Note that you should change "Allowed origins" to your website origin later on for increased security.
-[
-    {
-        "AllowedHeaders": [
-            "*"
-        ],
-        "AllowedMethods": [
-            "GET",
-            "HEAD",
-            "POST",
-            "PUT"
-        ],
-        "AllowedOrigins": [
-            "*"
-        ],
-        "ExposeHeaders": []
-    }
-]
+[  
+    {  
+        "AllowedHeaders": [  
+            "*"  
+        ],  
+        "AllowedMethods": [  
+            "GET",  
+            "HEAD",  
+            "POST",  
+            "PUT"  
+        ],  
+        "AllowedOrigins": [  
+            "*"  
+        ],  
+        "ExposeHeaders": []  
+    }  
+]  
 
 #### IAM permissions
 You need to set up an IAM account for your bucket, which you will use in the application for uploading files to the bucket with.
