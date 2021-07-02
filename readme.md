@@ -26,3 +26,56 @@ Last update: 2021-07-02
 ## Technologies used
 * The app us built with Django and Django-rest-framework on the back-end and using Django-templates to generate the user views.
 * The app is planned to be migrated on the front-end to use Next JS.
+
+## Usage
+The following section describes how to set up the application on your local machine after cloning the repo.
+
+### AWS
+Before being able to run the application you need to set up the needed resoruces on AWS. AWS has a free tier (https://aws.amazon.com/free/) where you can set up an account for free to be used for 1 year.
+
+#### S3-Bucket
+After created an account, set up an S3 bucket, note the name of your bucket and the region your bucket is located in. Then use the following settings for the permissions of your bucket:
+
+##### Public access
+Block public access to buckets and objects granted through new access control lists (ACLs)
+ Off
+Block public access to buckets and objects granted through any access control lists (ACLs)
+ Off
+Block public access to buckets and objects granted through new public bucket or access point policies
+ On
+Block public and cross-account access to buckets and objects through any public bucket or access point policies
+ On
+ 
+ ##### Cross-origin resource sharing (CORS)
+ Note that you should change "Allowed origins" to your website origin later on for increased security.
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET",
+            "HEAD",
+            "POST",
+            "PUT"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": []
+    }
+]
+
+#### IAM permissions
+You need to set up an IAM account for your bucket, which you will use in the application for uploading files to the bucket with.
+
+Create an IAM account with the following permissions, attached directly to your created S3 bucket:
+
+S3-permissions:
+* GetObject
+* PutObject
+* ListAllMyBuckets (optional if you want to test the IAM users access)
+* PutObjectAcl
+
+Take note of the Access Key and Security Key for the user, you will have to provide them when setting up the application.
+
