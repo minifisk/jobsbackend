@@ -25,6 +25,7 @@ Last update: 2021-07-02
 * Customizing the password-reset views when resetting the password from the login-view
 * Set up appropriate testing for back-end/front-end
 * Migrate the front-end to Next JS
+* Improved commenting of the code
 
 ## Technologies used
 * The app us built with Django and Django-rest-framework on the back-end and using Django-templates to generate the user views.
