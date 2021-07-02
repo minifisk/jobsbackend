@@ -40,9 +40,9 @@ After created an account, set up an S3 bucket, note the name of your bucket and 
 
 ##### Public access
 Block public access to buckets and objects granted through new access control lists (ACLs)
- Off
+ **Off**
 Block public access to buckets and objects granted through any access control lists (ACLs)
- Off
+ **Off**
 Block public access to buckets and objects granted through new public bucket or access point policies
  On
 Block public and cross-account access to buckets and objects through any public bucket or access point policies
@@ -79,7 +79,7 @@ S3-permissions:
 * ListAllMyBuckets (optional if you want to test the IAM users access)
 * PutObjectAcl
 
-Take note of the Access Key and Security Key for the user (you will only see them once), you will have to provide them when setting up the application.
+**Take note of the Access Key and Security Key for the user (you will only see them once)**, you will have to provide them when setting up the application.
 
 ### Setting up the .env file
 After setting up your AWS account, bucket and IAM role you need to set up your environment variables for the project. In the repo is included an ".env.example" file, this contain the needed lines for setting up your own .env file. Remove the ".example" ending so it's just named ".env" and start filling out the credentials for your project.
@@ -97,18 +97,18 @@ Here you fill out the name of your bucket and the region
 This project use a "dummy" email backend - meaning that all mails that go out are stored in a "fake inbox" and don't go out to the actual recipient, which is good for testing an application out. You can create a dummy email-backend over here for free https://mailtrap.io/ - check out their tutorials on how to get your credentials and then fill these out in your .env file.
 
 ### Install dependencies
-In the repository you will find a requirements.txt file, this file contain the needed dependencies for the library. If you don't already have pipenv installed, which is a environmental shell to run your application in, install it with npm install pipenv. After that, cd into the directory where the requirement.txt file is and run "pipenv install -r requirements.txt". Wait for the installatation of all packages to finish.
+In the repository you will find a requirements.txt file, this file contain the needed dependencies for the library. If you don't already have pipenv installed, which is a environmental shell to run your application in, install it with npm install pipenv. After that, cd into the directory where the requirement.txt file is and run **"pipenv install -r requirements.txt"**. Wait for the installatation of all packages to finish.
 
 After installed pipenv run "pipenv shell" to enter the virtual environment and to have access to the needed dependencies.
 
 ### AWS Configure
-To set up the Boto3 client (which is used to access your S3 bucket, the easiest way is to have set up the AWS CLI (https://aws.amazon.com/cli/). After you have set this up run  "aws configure" inside your terminal inside pipenvs shell environment (which you probably already have activated from the last step). Follow the instructions to set up the permissions in the project.
+To set up the Boto3 client (which is used to access your S3 bucket, the easiest way is to have set up the AWS CLI (https://aws.amazon.com/cli/). After you have set this up run  **"aws configure"** inside your terminal inside pipenvs shell environment (which you probably already have activated from the last step). Follow the instructions to set up the permissions in the project.
 
 ### Insert initial data into the database
-in the jobs_backend directory you will find a folder called "fixtures" with a file called "initial_data.json". This file contain data to populate your database with some initial data to be used in with the application (you can also add data with the API endpoints). Cd into the directory with "manage.py" and run "python manage.py loaddata initial_data.json" to load the fixtures, after that you have populated your database with some initial data.
+in the jobs_backend directory you will find a folder called "fixtures" with a file called "initial_data.json". This file contain data to populate your database with some initial data to be used in with the application (you can also add data with the API endpoints). Cd into the directory with "manage.py" and run **"python manage.py loaddata initial_data.json"** to load the fixtures, after that you have populated your database with some initial data.
 
 ### Start the server
-Cd into the directory where you find the "manage.py" file and run "python manage.py runserver" to start the server.
+Cd into the directory where you find the "manage.py" file and run **"python manage.py runserver"** to start the server.
 
 
 
