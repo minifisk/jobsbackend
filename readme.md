@@ -102,7 +102,7 @@ In the repository you will find a requirements.txt file, this file contain the n
 After installed pipenv run "pipenv shell" to enter the virtual environment and to have access to the needed dependencies.
 
 ### AWS Configure
-To set up the Boto3 client (which is used to access your S3 bucket, the easiest way is to have set up the AWS CLI (https://aws.amazon.com/cli/). After you have set this up just run "aws configure" inside your terminal inside pipenvs shell environment (which you probably already have activated from the last step). Follow the instructions to set up the permissions in the project.
+To set up the Boto3 client (which is used to access your S3 bucket, the easiest way is to have set up the AWS CLI (https://aws.amazon.com/cli/). After you have set this up run  "aws configure" inside your terminal inside pipenvs shell environment (which you probably already have activated from the last step). Follow the instructions to set up the permissions in the project.
 
 ### Insert initial data into the database
 in the jobs_backend directory you will find a folder called "fixtures" with a file called "initial_data.json". This file contain data to populate your database with some initial data to be used in with the application (you can also add data with the API endpoints). Cd into the directory with "manage.py" and run "python manage.py loaddata initial_data.json" to load the fixtures, after that you have populated your database with some initial data.
