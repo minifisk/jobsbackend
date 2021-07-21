@@ -1,0 +1,14 @@
+{% extends "main/header.html" %}
+
+{% block content %}
+
+<!--Password Reset Complete-->
+<div class="container p-4">
+    <h2 class="font-weight-bold mt-3">Registration failed, please try again</h2>
+    <hr>
+    <p>Error: No account type was provided (employer/applicant)</p>
+    <a href="/register/applicant">Register as job-seeker</a><br>
+    <a href="/register/employer">Register as employer</a><br>
+</div>
+
+{% endblock %}
