@@ -1,16 +1,12 @@
-""" IMPORTS """
+""" VIEWS """
+# Python packages imports
+import os
+import logging
 
-# Fundamental imports
-from django.shortcuts import render, redirect
-
-from rest_framework import generics
-from rest_framework.response import Response
-from .models import User, Posting, Application
-from .serializers import UserSerializer, PostingSerializer, ApplicationSerializer
+# Core Django imports
+from django.shortcuts import render, redirect, resolve_url
 from django.contrib.auth import views as auth_views
-import sys
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
@@ -19,22 +15,21 @@ from django.core.mail import send_mail, BadHeaderError, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django import template
 from django.http import JsonResponse
-import os
-import boto3
-import boto3.session
-import json
-import logging
 from django.db.models import Q
 from django.contrib.auth.forms import SetPasswordForm
-from rest_framework import serializers
 
+# Third-party imports
+from rest_framework import generics, serializers
+from rest_framework.response import Response
+import boto3
+import boto3.session
 
+# App imports
+from jobs_backend.app.models import User, Posting, Application
+from jobs_backend.app.serializers import UserSerializer, PostingSerializer, ApplicationSerializer
 
-
-
-# Loggin level
+# Logging level
 logging.basicConfig(level=logging.INFO)
-
 
 
 # Create your views here.

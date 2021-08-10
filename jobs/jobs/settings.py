@@ -35,11 +35,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'jobs_backend',
     'rest_framework',
     'django_extensions',
     'django.contrib.sites',
-    'crispy_forms'
+    'crispy_forms',
+    'jobs_backend', 
 ]
 
 SITE_ID = 1
@@ -107,12 +107,16 @@ AUTH_USER_MODEL = "jobs_backend.User"
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
+MIN_PASSWORD_LENGTH = 8
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            "min_length": MIN_PASSWORD_LENGTH,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -146,4 +150,6 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MIGRATION_MODULES = {'jobs_backend': 'jobs_backend.app.migrations'}
 
