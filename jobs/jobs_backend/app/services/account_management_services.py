@@ -18,13 +18,14 @@ from jobs_backend.errors import custom_errors
 from jobs_backend.utils import token_utils
 
 # Custom method to create an _EMPLOYER_ account
-def create_employer_account(sanitized_email, unsafe_password, sanitized_company_name):
+def create_employer_account(sanitized_email, unsafe_password, sanitized_company_name, is_employer):
 
     # Validating sanitized input with custom validation-function
     fields_to_validate_dict = {
         "email": sanitized_email,
         "password": unsafe_password,
         "company_name": sanitized_company_name,
+        "is_employer": is_employer,
     }
 
     EmployerAccountCreationValidator().load(fields_to_validate_dict)
@@ -46,8 +47,9 @@ def create_employer_account(sanitized_email, unsafe_password, sanitized_company_
         nfkc_email=nfkc_email, 
         nfc_company_name=nfc_company_name, 
         nfkc_company_name=nfkc_company_name,
-        password = unsafe_password,
-        is_employer = True
+        unsafe_password = unsafe_password,
+        is_employer = True,
+        is_active = True
     )
 
     # Send activation email to user
@@ -59,12 +61,13 @@ def create_employer_account(sanitized_email, unsafe_password, sanitized_company_
     return ( user_model, auth_token, )
 
 # Custom method to create an _APPLICANT_ account
-def create_applicant_account(sanitized_email, unsafe_password):
+def create_applicant_account(sanitized_email, unsafe_password, is_employer):
 
     # Validating sanitized input with custom validation-function
     fields_to_validate_dict = {
         "email": sanitized_email,
         "password": unsafe_password,
+        "is_employer": is_employer
     }
 
     ApplicantAccountCreationValidator().load(fields_to_validate_dict)
@@ -81,7 +84,7 @@ def create_applicant_account(sanitized_email, unsafe_password):
     user_model = User.objects.create_user(
         nfc_email=nfc_email, 
         nfkc_email=nfkc_email,
-        password = unsafe_password,
+        unsafe_password = unsafe_password,
         is_employer = False
     )
 

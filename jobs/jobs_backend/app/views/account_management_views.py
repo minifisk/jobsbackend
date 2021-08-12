@@ -22,16 +22,28 @@ from jobs_backend.utils import sanitization_utils
 from jobs_backend.app.services import account_management_services
 from jobs_backend.utils.error_utils import get_validation_error_response, get_business_requirement_error_response
 from jobs_backend.errors import custom_errors
+from django.contrib.auth.forms import SetPasswordForm
 
 # Logging level
 logging.basicConfig(level=logging.INFO)
 
 
-class LoginUser(auth_views.LoginView):
-    """View for logging in user"""
 
+class LoginUser(auth_views.LoginView):
+
+    # Custom redirect when logged in
     def get_success_url(self):
         return resolve_url("accounts:login")
+
+# View used when user request a password reset
+class MySetPasswordForm(SetPasswordForm):
+   
+    def save(self, *args, commit=True, **kwargs):
+        user = super().save(*args, commit=False, **kwargs)
+        user.is_active = True # Setting is_active to True to enable email confirmation
+        if commit:
+            user.save()
+        return user
 
 
 class User(APIView):
@@ -54,6 +66,7 @@ class User(APIView):
             unsafe_company_name = request.POST.get("company_name")
             unsafe_password = request.POST.get("password")
             unsafe_confirm_password = request.POST.get("confirm_password")
+            is_employer = True
 
             # Check password confirmation
             if unsafe_password != unsafe_confirm_password:
@@ -69,6 +82,7 @@ class User(APIView):
                     sanitized_email,
                     unsafe_password,
                     sanitized_company_name,
+                    is_employer,
                 )
                 logging.info("Created new Employer account")
 
@@ -89,6 +103,7 @@ class User(APIView):
             unsafe_email = request.POST.get("email")
             unsafe_password = request.POST.get("password")
             unsafe_confirm_password = request.POST.get("confirm_password")
+            is_employer = False
 
             # Check password confirmation
             if unsafe_password != unsafe_confirm_password:
@@ -102,6 +117,7 @@ class User(APIView):
                 user_model, auth_token = account_management_services.create_applicant_account(
                     sanitized_email,
                     unsafe_password,
+                    is_employer
                 )
                 logging.info("Created new Applicant account")
 

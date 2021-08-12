@@ -52,59 +52,6 @@ class ApplicantDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.filter(is_employer=False)
     serializer_class = UserSerializer
 
-def Register(request, type):
-
-    if request.method == 'GET':
-        if type == "employer":
-            return render(request, 'registration/register_employer.html')
-        if type == "applicant":
-            return render(request, 'registration/register_applicant.html')
-    if request.method == 'POST':
-        if type == "employer":
-            email = request.POST.get('email')
-            company_name = request.POST.get('company_name')
-            password = request.POST.get('password')
-            confirm_password = request.POST.get('confirm_password')
-
-            if password != confirm_password:
-                raise serializers.ValidationError("Passwords don't match!")
-
-            context = {'email': email, 'company_name': company_name, 'is_employer': True, 'is_active': True}
-    
-            serializer = UserSerializer(data=context)
-
-            if serializer.is_valid():
-                user = User.objects.create_user(email=email, password=password, is_employer=True, is_active=True)
-                logging.info("Created new Employer")
-
-            else:
-                logging.info(serializer.errors)
-                raise serializers.ValidationError(serializer.errors)
-
-            return render(request, 'registration/register_success.html')
-
-        if type == "applicant":
-            email = request.POST.get('email')
-            password = request.POST.get('password')
-            confirm_password = request.POST.get('confirm_password')
-
-            if password != confirm_password:
-                raise serializers.ValidationError("Passwords don't match!")
-
-            context = {'email': email, 'is_employer': False, 'is_active': True, 'company_name': ""}
-    
-            serializer = UserSerializer(data=context)
-
-            if serializer.is_valid():
-                user = User.objects.create_user(email=email, password=password, is_employer=False, is_active=True)
-                logging.info("Created new Applicant")
-
-            else:
-                logging.info(serializer.errors)
-                raise serializers.ValidationError(serializer.errors)
-
-            return render(request, 'registration/register_success.html')
-
 
 """ EMPLOYERS """
 class EmployerList(generics.ListCreateAPIView):
@@ -208,7 +155,7 @@ class ApplicationList(generics.ListCreateAPIView):
                 plaintext = template.loader.get_template('main/password/password_reset_email.txt')
                 htmltemp = template.loader.get_template('main/password/password_reset_email.html')
                 c = {
-                "email":applicant.email,
+                "email":applicant.nfkc_email,
                 'domain':'127.0.0.1:8000',
                 'site_name': 'Jobs',
                 "uid": urlsafe_base64_encode(force_bytes(applicant.pk)),

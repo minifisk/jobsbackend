@@ -48,10 +48,11 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=False)
     is_employer = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "nfkc_email"
-    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "nfkc_email" # Set the NFKC email field to the username field
+    EMAIL_FIELD = "nfkc_email" # Set the default email field (used in password reset, etc) to NFKC email field
+    REQUIRED_FIELDS = [nfkc_email]
 
-    objects = CustomUserManager()
+    objects = CustomUserManager() 
 
     def __str__(self):
         return '%s %s' % (self.nfc_email, self.nfkc_company_name)

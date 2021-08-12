@@ -12,35 +12,57 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 # App imports
 from jobs_backend.app.views import account_management_views
+from jobs_backend.app.forms import PasswordResetFormAllowInactiveUser, SetPasswordFormActivateUserAccount
 from . import views
 
 
 urlpatterns = [
-    # INDEX ROUTE
+# INDEX ROUTE
     path("", views.SearchView, name="home"),
 
-    # ACCOUNT MANAGEMENT ROUTES
+# DJANGO DEFAULT ACCOUNT ROUTES
 
     ## Default accounts route,
     path("accounts/", include("django.contrib.auth.urls")),
 
+## REGISTER ROUTES
+
     ## Custom register route for employers/applicants
+    ## for: sers who are creating a new account
     path("register/<str:account_type>", account_management_views.User.as_view(), name="register"),
     
     ## Custom login route to /login instead of /accounts/login
+    ## for: users who are logging in
     path("login/", auth_views.LoginView.as_view(), name="login"),
     
-    ## Custom reset route for using custom template
+# PASSWORD RESET ROUTES
+
+    ## Password reset view
+    ## for: users who click reset link on website
+    ## using: custom form allowing also inactive users to reset password
+    path(
+        "reset/",
+        auth_views.PasswordResetView.as_view(
+            form_class=PasswordResetFormAllowInactiveUser
+        ),
+        name="password_reset_complete",
+    ),
+
+    ## Password reset view 
+    ## for: users who have clicked reset password link in email
+    ## using: custom form that activate inactive users
     path(
         "reset/<uidb64>/<token>/",
         auth_views.PasswordResetConfirmView.as_view(
             template_name="main/password/password_reset_confirm.html",
-            form_class=views.MySetPasswordForm,
+            form_class=SetPasswordFormActivateUserAccount,
         ),
         name="password_reset_confirm",
     ),
     
-    ## Custom reset confirm route for using custom template
+    ## Password reset confirm route
+    ## for: users who have successfully reset their password to a new one 
+    ## using: custom template
     path(
         "reset/done/",
         auth_views.PasswordResetCompleteView.as_view(
@@ -49,7 +71,7 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     
-    # INTERNALLY USED ENDPOINTS
+# INTERNALLY USED ENDPOINTS
     
     ## Endpoint for generating a signed URL for users uploaded CV
     path("sign_s3/", views.Sign_s3, name="sign_s3"),
@@ -57,7 +79,7 @@ urlpatterns = [
     ## Endpoint for generating search results on index page
     path("search/", views.SearchQuery, name="search_query"),
     
-    # USER RELEVANT ENDPOINTS
+# USER RELEVANT ENDPOINTS
     
     ## Profile endpoint for seeing current applications
     path("profile/<int:pk>", views.ProfileView, name="profile_view"),
@@ -69,7 +91,7 @@ urlpatterns = [
         name="submit_application",
     ),
     
-    # "INSPECT" ENDPOINTS FOR DEVELOPERS
+# "INSPECT" ENDPOINTS FOR DEVELOPERS
     
     ## Postings endpoints for seeing one or all postings
     path("postings/", views.PostingList.as_view()),
