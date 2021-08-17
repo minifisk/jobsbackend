@@ -4,15 +4,15 @@ from .models import User, Posting, Application
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'is_employer', 'is_active', 'company_name']
+        fields = ['nfkc_email', 'is_employer', 'is_active', 'nfkc_company_name']
 
     def validate(self, data):
         """
         Check that employers fill out company name
         """
-        if data.get('is_employer') == True and data.get('company_name') == "":
+        if data.get('is_employer') == True and data.get('nfkc_company_name') == "":
             raise serializers.ValidationError("Employers must fill out company name")
-        if data.get('is_employer') == False and data.get('company_name') != "":
+        if data.get('is_employer') == False and data.get('nfkc_company_name') != "":
             raise serializers.ValidationError("Only Employers can have a company name!")
         return data
 

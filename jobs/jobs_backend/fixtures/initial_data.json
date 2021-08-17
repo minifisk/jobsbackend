@@ -3,18 +3,18 @@
     "model": "jobs_backend.User",
     "pk": 1,
     "fields": {
-      "email": "alexlindgren08@gmail.com",
+      "nfkc_email": "alexlindgren08@gmail.com",
       "is_employer": "True",
-      "company_name": "Guttae AB"
+      "nfkc_company_name": "Guttae AB"
     }
   },
   {
     "model": "jobs_backend.User",
     "pk": 2,
     "fields": {
-      "email": "alexander.f.lindgren@gmail.com",
+      "nfkc_email": "alexander.f.lindgren@gmail.com",
       "is_employer": "True",
-      "company_name": "Studiehjälpen AB"
+      "nfkc_company_name": "Studiehjälpen AB"
     }
   },
   {

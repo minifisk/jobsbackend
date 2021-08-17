@@ -50,8 +50,8 @@
                     {% endif %}
                     {% endfor %}</option>
             </select> <br>
-            <label class="mt-4" for="file">Select your CV (PDF format)</label><br>
-            <input type="file" name="file" id="file-input" required><br>
+            <label class="mt-4" for="file">Select your CV (only PDF format, max size 10 MB)</label><br>
+            <input type="file" name="file" id="file-input" accept="application/pdf" required><br>
             <a id="cv-status" href=""></a><br>
             <label class="mt-2" for="email">Input your email</label><br>
             {% if user.is_authenticated %}

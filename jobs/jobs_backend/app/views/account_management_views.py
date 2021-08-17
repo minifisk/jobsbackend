@@ -29,11 +29,6 @@ logging.basicConfig(level=logging.INFO)
 
 
 
-class LoginUser(auth_views.LoginView):
-
-    # Custom redirect when logged in
-    def get_success_url(self):
-        return resolve_url("accounts:login")
 
 # View used when user request a password reset
 class MySetPasswordForm(SetPasswordForm):

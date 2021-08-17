@@ -34,47 +34,11 @@ logging.basicConfig(level=logging.INFO)
 
 # Create your views here.
 
-""" LOGIN VIEW """
-class LoginUser(auth_views.LoginView):
-    def get(self, request, *args, **kwargs):
-        return super(LoginUser, self).get(request, *args, **kwargs)
-
-    def get_success_url(self):
-        return resolve_url('accounts:login')
-
-
-""" APPLICANTS """
-class ApplicantList(generics.ListCreateAPIView):
-    queryset = User.objects.filter(is_employer=False)
-    serializer_class = UserSerializer
-
-class ApplicantDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.filter(is_employer=False)
-    serializer_class = UserSerializer
-
-
-""" EMPLOYERS """
-class EmployerList(generics.ListCreateAPIView):
-    queryset = User.objects.filter(is_employer=True)
-    serializer_class = UserSerializer
-
-class EmployerDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.filter(is_employer=True)
-    serializer_class = UserSerializer
-
-""" POSTINGS """
-class PostingList(generics.ListCreateAPIView):
-    queryset = Posting.objects.all()
-    serializer_class = PostingSerializer
-
-class PostingDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Posting.objects.all()
-    serializer_class = PostingSerializer
 
 
 """ APPLICATIONS """
 
-def SubmitApplication(request, requested_posting_id):
+def SubmitApplicationView(request, requested_posting_id):
     requested_posting_id = int(requested_posting_id)
     postings = Posting.objects.all()
     return render(request, 'main/application/application.html', {'postings':postings, 'requested_posting_id': requested_posting_id })
@@ -208,45 +172,3 @@ class ApplicationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
-""" SEARCH """
-def SearchView(request):
-    return render(request, 'main/search/search.html')
-
-def SearchQuery(request):
-
-    search = request.GET.get("search")
-    queryset = Posting.objects.all()
-    payload = []
-    if search:
-        queryset = queryset.filter(Q(title__icontains=search) | Q(work_title__icontains=search))
-        for result in queryset:
-            payload.append(result.title + " || " + result.work_title + " || " + "id: " + str(result.id))
-    
-    return JsonResponse({'status': 200, 'data': payload})
-
-""" PASSWORD RESET """
-class MySetPasswordForm(SetPasswordForm):
-    
-    def save(self, *args, commit=True, **kwargs):
-        user = super().save(*args, commit=False, **kwargs)
-        user.is_active = True
-        if commit:
-            user.save()
-        return user
-
-""" PROFILE """
-def ProfileView(request, pk):
-
-    user_pk = request.user.pk
-    browser_pk = pk
-    user = User.objects.get(pk=user_pk)
-
-    
-    if request.user.is_authenticated == False:
-        return redirect('/login')
-    else:
-        if user_pk != browser_pk:
-            return redirect('/profile/' + str(user_pk))
-        else:
-            applications = Application.objects.filter(applicant=user)
-            return render(request, 'main/profile/profile.html', {'applications': applications})

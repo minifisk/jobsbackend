@@ -3,6 +3,8 @@
 
 """ URLs for jobs_backend """
 
+import pdb
+
 # Core Django Imports
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
@@ -11,14 +13,20 @@ from django.contrib.auth import views as auth_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # App imports
-from jobs_backend.app.views import account_management_views
 from jobs_backend.app.forms import PasswordResetFormAllowInactiveUser, SetPasswordFormActivateUserAccount
+from jobs_backend.app.views import account_management_views
+from jobs_backend.app.views import browsable_api_views
+from jobs_backend.app.views import search_views
+from jobs_backend.app.views import user_views
+from jobs_backend.app.views import submit_application_views
 from . import views
 
-
 urlpatterns = [
-# INDEX ROUTE
-    path("", views.SearchView, name="home"),
+# SEARCH VIEWS
+    path("", search_views.SearchView, name="home"),
+
+    ## Endpoint for generating search results on index page
+    path("search/", search_views.SearchQuery, name="search_query"),
 
 # DJANGO DEFAULT ACCOUNT ROUTES
 
@@ -71,39 +79,38 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     
-# INTERNALLY USED ENDPOINTS
+# SUBMITTING APPLICATION VIEWS
     
-    ## Endpoint for generating a signed URL for users uploaded CV
-    path("sign_s3/", views.Sign_s3, name="sign_s3"),
-    
-    ## Endpoint for generating search results on index page
-    path("search/", views.SearchQuery, name="search_query"),
-    
-# USER RELEVANT ENDPOINTS
-    
-    ## Profile endpoint for seeing current applications
-    path("profile/<int:pk>", views.ProfileView, name="profile_view"),
+    ## Endpoint for generating a signed URL on AWS for a users uploaded CV
+    path("sign_s3/", submit_application_views.Sign_s3, name="sign_s3"),
     
     ## Endpoint for generating a submit template for a certain posting
     path(
         "submitapplication/<requested_posting_id>",
-        views.SubmitApplication,
+        submit_application_views.SubmitApplicationView,
         name="submit_application",
     ),
     
-# "INSPECT" ENDPOINTS FOR DEVELOPERS
+# USER VIEWS
     
+    ## Profile endpoint for seeing current applications
+    path("profile/<int:pk>", user_views.ProfileView, name="profile_view"),
+    
+
+# "INSPECT" ENDPOINTS FOR DEVELOPERS
+
     ## Postings endpoints for seeing one or all postings
-    path("postings/", views.PostingList.as_view()),
-    path("postings/<int:pk>/", views.PostingDetail.as_view()),
+
+    path("postings/", browsable_api_views.PostingList.as_view()),
+    path("postings/<int:pk>/", browsable_api_views.PostingDetail.as_view()),
     
     ## Applicants endpoints for seseing one or all applicants
-    path("applicants/", views.ApplicantList.as_view()),
-    path("applicants/<int:pk>/", views.ApplicantDetail.as_view()),
+    path("applicants/", browsable_api_views.ApplicantList.as_view()),
+    path("applicants/<int:pk>/", browsable_api_views.ApplicantDetail.as_view()),
     
     ## Employer endpoint for seing one or all employers
-    path("employers/", views.EmployerList.as_view()),
-    path("employers/<int:pk>", views.EmployerDetail.as_view()),
+    path("employers/", browsable_api_views.EmployerList.as_view()),
+    path("employers/<int:pk>", browsable_api_views.EmployerDetail.as_view()),
     
     ## Application endpoint for seing one or all applications
     path("applications/", views.ApplicationList.as_view()),

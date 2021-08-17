@@ -32,13 +32,14 @@ class CustomUserManager(UserManager):
 """ CUSTOM USER MODEL WITH EMAIL AS USERNAME """
 class User(AbstractUser):
 
+    # Setting "default" fields to None to not make them required
     username = None
     first_name = None
     last_name = None
     email = None
 
-    """ Storing both NFC format (display to user on web) 
-    and NFKC (searching and guaranteering uniqueness) """
+    #Storing both NFC format (display to user on web) 
+    #and NFKC (searching and guaranteering uniqueness)
     nfc_email = models.EmailField()
     nfkc_email = models.EmailField(unique=True)
 
@@ -48,10 +49,16 @@ class User(AbstractUser):
     is_active = models.BooleanField(default=False)
     is_employer = models.BooleanField(default=False)
 
+    # Setting default username_field to primary email field
     USERNAME_FIELD = "nfkc_email" # Set the NFKC email field to the username field
+
+    # Setting primary email field
     EMAIL_FIELD = "nfkc_email" # Set the default email field (used in password reset, etc) to NFKC email field
+    
+    # Setting required fields
     REQUIRED_FIELDS = [nfkc_email]
 
+    # Setting up user-model with custom usermanager
     objects = CustomUserManager() 
 
     def __str__(self):
