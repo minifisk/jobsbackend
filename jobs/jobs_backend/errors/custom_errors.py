@@ -1,4 +1,3 @@
-
 # Core Django imports
 
 # Third-party imports

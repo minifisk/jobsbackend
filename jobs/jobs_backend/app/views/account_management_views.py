@@ -16,11 +16,12 @@ from rest_framework import serializers
 import marshmallow
 
 # App imports
-from jobs_backend.app.models import User
-from jobs_backend.app.serializers import UserSerializer
 from jobs_backend.utils import sanitization_utils
 from jobs_backend.app.services import account_management_services
-from jobs_backend.utils.error_utils import get_validation_error_response, get_business_requirement_error_response
+from jobs_backend.utils.error_utils import (
+    get_validation_error_response,
+    get_business_requirement_error_response,
+)
 from jobs_backend.errors import custom_errors
 from django.contrib.auth.forms import SetPasswordForm
 
@@ -28,14 +29,11 @@ from django.contrib.auth.forms import SetPasswordForm
 logging.basicConfig(level=logging.INFO)
 
 
-
-
 # View used when user request a password reset
 class MySetPasswordForm(SetPasswordForm):
-   
     def save(self, *args, commit=True, **kwargs):
         user = super().save(*args, commit=False, **kwargs)
-        user.is_active = True # Setting is_active to True to enable email confirmation
+        user.is_active = True  # Setting is_active to True to enable email confirmation
         if commit:
             user.save()
         return user
@@ -73,7 +71,10 @@ class User(APIView):
 
             # Trying registration of account and logging completion
             try:
-                user_model, auth_token = account_management_services.create_employer_account(
+                (
+                    user_model,
+                    auth_token,
+                ) = account_management_services.create_employer_account(
                     sanitized_email,
                     unsafe_password,
                     sanitized_company_name,
@@ -83,12 +84,16 @@ class User(APIView):
 
             # Validation error & custom errors
             except marshmallow.exceptions.ValidationError as e:
-                return get_validation_error_response(validation_error=e, http_status_code=422)
+                return get_validation_error_response(
+                    validation_error=e, http_status_code=422
+                )
             except custom_errors.EmailAddressAlreadyExistsError as e:
-                return get_business_requirement_error_response(business_logic_error=e, http_status_code=409)
+                return get_business_requirement_error_response(
+                    business_logic_error=e, http_status_code=409
+                )
 
-            # Return the auth token recieved on registration for front-end use 
-            resp = { "data": { "auth_token": auth_token } }
+            # Return the auth token recieved on registration for front-end use
+            resp = {"data": {"auth_token": auth_token}}
             return Response(data=resp, status=201)
 
         # Registrating an applicant-account
@@ -109,19 +114,24 @@ class User(APIView):
 
             # Trying registration of account and logging completion
             try:
-                user_model, auth_token = account_management_services.create_applicant_account(
-                    sanitized_email,
-                    unsafe_password,
-                    is_employer
+                (
+                    user_model,
+                    auth_token,
+                ) = account_management_services.create_applicant_account(
+                    sanitized_email, unsafe_password, is_employer
                 )
                 logging.info("Created new Applicant account")
 
             # Validation error & custom errors
             except marshmallow.exceptions.ValidationError as e:
-                return get_validation_error_response(validation_error=e, http_status_code=422)
+                return get_validation_error_response(
+                    validation_error=e, http_status_code=422
+                )
             except custom_errors.EmailAddressAlreadyExistsError as e:
-                return get_business_requirement_error_response(business_logic_error=e, http_status_code=409)
+                return get_business_requirement_error_response(
+                    business_logic_error=e, http_status_code=409
+                )
 
-            # Return the auth token recieved on registration for front-end use 
-            resp = { "data": { "auth_token": auth_token } }
+            # Return the auth token recieved on registration for front-end use
+            resp = {"data": {"auth_token": auth_token}}
             return Response(data=resp, status=201)

@@ -2,5 +2,5 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": false,
     "python.linting.flake8Enabled": false,
-    "python.pythonPath": "/Users/alexanderlindgren/.local/share/virtualenvs/jobsbackend-EG7T9i3-/bin/python"
+    "python.pythonPath": "/Users/alexanderlindgren/.pyenv/shims/python"
 }

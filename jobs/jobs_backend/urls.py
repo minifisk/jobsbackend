@@ -13,7 +13,10 @@ from django.contrib.auth import views as auth_views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 # App imports
-from jobs_backend.app.forms import PasswordResetFormAllowInactiveUser, SetPasswordFormActivateUserAccount
+from jobs_backend.app.forms import (
+    PasswordResetFormAllowInactiveUser,
+    SetPasswordFormActivateUserAccount,
+)
 from jobs_backend.app.views import account_management_views
 from jobs_backend.app.views import browsable_api_views
 from jobs_backend.app.views import search_views
@@ -22,29 +25,33 @@ from jobs_backend.app.views import submit_application_views
 from . import views
 
 urlpatterns = [
-# SEARCH VIEWS
+    ##############
+    # SEARCH VIEWS
+    ##############
     path("", search_views.SearchView, name="home"),
-
     ## Endpoint for generating search results on index page
     path("search/", search_views.SearchQuery, name="search_query"),
-
-# DJANGO DEFAULT ACCOUNT ROUTES
-
+    ###############################
+    # DJANGO DEFAULT ACCOUNT ROUTES
+    ###############################
     ## Default accounts route,
     path("accounts/", include("django.contrib.auth.urls")),
-
-## REGISTER ROUTES
-
+    ##################
+    ## REGISTER ROUTES
+    ##################
     ## Custom register route for employers/applicants
     ## for: sers who are creating a new account
-    path("register/<str:account_type>", account_management_views.User.as_view(), name="register"),
-    
+    path(
+        "register/<str:account_type>",
+        account_management_views.User.as_view(),
+        name="register",
+    ),
     ## Custom login route to /login instead of /accounts/login
     ## for: users who are logging in
     path("login/", auth_views.LoginView.as_view(), name="login"),
-    
-# PASSWORD RESET ROUTES
-
+    #######################
+    # PASSWORD RESET ROUTES
+    #######################
     ## Password reset view
     ## for: users who click reset link on website
     ## using: custom form allowing also inactive users to reset password
@@ -55,8 +62,7 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-
-    ## Password reset view 
+    ## Password reset view
     ## for: users who have clicked reset password link in email
     ## using: custom form that activate inactive users
     path(
@@ -67,9 +73,8 @@ urlpatterns = [
         ),
         name="password_reset_confirm",
     ),
-    
     ## Password reset confirm route
-    ## for: users who have successfully reset their password to a new one 
+    ## for: users who have successfully reset their password to a new one
     ## using: custom template
     path(
         "reset/done/",
@@ -78,43 +83,41 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
-    
-# SUBMITTING APPLICATION VIEWS
-    
+    ##############################
+    # SUBMITTING APPLICATION VIEWS
+    ##############################
     ## Endpoint for generating a signed URL on AWS for a users uploaded CV
     path("sign_s3/", submit_application_views.Sign_s3, name="sign_s3"),
-    
-    ## Endpoint for generating a submit template for a certain posting
+    ## Endpoint for generating a submit template for a new job application
     path(
         "submitapplication/<requested_posting_id>",
         submit_application_views.SubmitApplicationView,
+        name="submit_application_view",
+    ),
+    ## Endpoint for handling creation of new applications
+    path(
+        "submitapplication/",
+        submit_application_views.SubmitApplication,
         name="submit_application",
     ),
-    
-# USER VIEWS
-    
+    ######################
+    # BROWSABLE USER VIEWS
+    ######################
     ## Profile endpoint for seeing current applications
     path("profile/<int:pk>", user_views.ProfileView, name="profile_view"),
-    
-
-# "INSPECT" ENDPOINTS FOR DEVELOPERS
-
+    # "INSPECT" ENDPOINTS FOR DEVELOPERS
     ## Postings endpoints for seeing one or all postings
-
     path("postings/", browsable_api_views.PostingList.as_view()),
     path("postings/<int:pk>/", browsable_api_views.PostingDetail.as_view()),
-    
     ## Applicants endpoints for seseing one or all applicants
     path("applicants/", browsable_api_views.ApplicantList.as_view()),
     path("applicants/<int:pk>/", browsable_api_views.ApplicantDetail.as_view()),
-    
     ## Employer endpoint for seing one or all employers
     path("employers/", browsable_api_views.EmployerList.as_view()),
     path("employers/<int:pk>", browsable_api_views.EmployerDetail.as_view()),
-    
     ## Application endpoint for seing one or all applications
-    path("applications/", views.ApplicationList.as_view()),
-    path("applications/<int:pk>", views.ApplicationDetail.as_view()),
+    path("applications/", browsable_api_views.ApplicationList.as_view()),
+    path("applications/<int:pk>", browsable_api_views.ApplicationDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
